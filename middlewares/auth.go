@@ -3,8 +3,9 @@ package middlewares
 import (
 	"strings"
 
+	"to-do/config"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vsouza/go-gin-boilerplate/config"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

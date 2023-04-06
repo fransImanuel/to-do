@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vsouza/go-gin-boilerplate/config"
-	"github.com/vsouza/go-gin-boilerplate/db"
-	"github.com/vsouza/go-gin-boilerplate/server"
+	"to-do/config"
+	"to-do/db"
+	"to-do/server"
 )
 
 func main() {
+	config.InitEnv()
 	environment := flag.String("e", "development", "")
 	flag.Usage = func() {
 		fmt.Println("Usage: server -e {mode}")
