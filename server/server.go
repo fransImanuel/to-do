@@ -1,9 +1,10 @@
 package server
 
-import "to-do/config"
+import (
+	"to-do/db"
+)
 
-func Init() {
-	config := config.GetConfig()
-	r := NewRouter()
-	r.Run(config.GetString("server.port"))
+func Init(mysql *db.MysqlConn) {
+	r := NewRouter(mysql)
+	r.Run(":8090")
 }
