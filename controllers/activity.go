@@ -57,7 +57,7 @@ func PostActivity(c *gin.Context) {
 
 	db.Last(&activity)
 
-	c.JSON(http.StatusOK, gin.H{"status": "Success", "message": "Success", "data": activity})
+	c.JSON(http.StatusCreated, gin.H{"status": "Success", "message": "Success", "data": activity})
 
 }
 
@@ -98,7 +98,7 @@ func DeleteActivityByID(c *gin.Context) {
 	}
 
 	if result.RowsAffected < 1 {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Activity with ID %s Not Found", id), "status": "Not Found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Activity with ID %s Not Found", id), "status": "Not Found"})
 		return
 	}
 

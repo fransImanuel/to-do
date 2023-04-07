@@ -16,3 +16,10 @@ type Todo struct {
 type Test struct {
 	Counter int64
 }
+
+type PostTodo_Req struct {
+	Activity_Group_Id int64  `json:"activity_group_id" gorm:"column:activity_group_id"`
+	Title             string `json:"title" gorm:"column:title"`
+	Priority          string `json:"priority" gorm:"column:priority"`
+	Is_Active         bool   `json:"is_active" gorm:"column:is_active"`
+}

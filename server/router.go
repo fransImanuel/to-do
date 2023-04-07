@@ -14,19 +14,6 @@ func NewRouter(mysql *db.MysqlConn) *gin.Engine {
 		ctx.Set("db", mysql.GetDBInstance()) //set mysql db instance
 	})
 
-	health := new(controllers.HealthController)
-
-	r.GET("/health", health.Status)
-	// r.Use(middlewares.AuthMiddleware())
-
-	v1 := r.Group("v1")
-	{
-		userGroup := v1.Group("hello")
-		{
-			userGroup.GET("/:id", controllers.HelloWorldController)
-		}
-	}
-
 	//Activity
 	r.GET("/activity-groups", controllers.GetAllActivity)
 	r.GET("/activity-groups/:id", controllers.GetActivityByID)
@@ -36,6 +23,10 @@ func NewRouter(mysql *db.MysqlConn) *gin.Engine {
 
 	//Todo
 	r.GET("/todo-items", controllers.GetAllTodo)
+	r.GET("/todo-items/:id", controllers.GetTodoByID)
+	r.POST("/todo-items", controllers.PostTodo)
+	r.PATCH("/todo-items/:id", controllers.UpdateTodoByID)
+	r.DELETE("/todo-items/:id", controllers.DeleteTodoByID)
 
 	return r
 
