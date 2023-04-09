@@ -10,8 +10,8 @@ type Todo struct {
 	Title             string    `json:"title" gorm:"column:title"`
 	Priority          string    `json:"priority" gorm:"column:priority"`
 	Is_Active         bool      `json:"is_active" gorm:"column:is_active"`
-	Created_At        time.Time `json:"created_at" gorm:"column:created_at;autoCreateTime"`
-	UpdatedAt         time.Time `json:"updated_at" gorm:"updated_at"`
+	Created_At        time.Time `json:"createdAt" gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt         time.Time `json:"updatedAt" gorm:"updated_at"`
 }
 
 type Test struct {
@@ -19,8 +19,8 @@ type Test struct {
 }
 
 type PostTodo_Req struct {
-	Activity_Group_Id int64  `json:"activity_group_id" binding:"required"  gorm:"column:activity_group_id"`
-	Title             string `json:"title" binding:"required" gorm:"column:title"`
+	Activity_Group_Id int64  `json:"activity_group_id"  gorm:"column:activity_group_id"`
+	Title             string `json:"title" gorm:"column:title"`
 	Priority          string `json:"priority" gorm:"column:priority"`
 	Is_Active         bool   `json:"is_active" gorm:"column:is_active"`
 }

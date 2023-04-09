@@ -57,6 +57,15 @@ func PostTodo(c *gin.Context) {
 		return
 	}
 
+	if B.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "Bad Request", "message": "title cannot be null"})
+		return
+	}
+	if B.Activity_Group_Id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "Bad Request", "message": "activity_group_id cannot be null"})
+		return
+	}
+
 	if err := db.Raw("insert into todos(title, activity_group_id, is_active, priority) values(?,?,?,?)", B.Title, B.Activity_Group_Id, B.Is_Active, B.Priority).Scan(&todos).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": err.Error()})
 		return
@@ -86,7 +95,7 @@ func UpdateTodoByID(c *gin.Context) {
 	}
 
 	if result.RowsAffected < 1 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "ID tidak ditemukan", "status": http.StatusNotFound})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found", "status": http.StatusNotFound})
 		return
 	}
 
