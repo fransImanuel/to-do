@@ -12,7 +12,7 @@ import (
 func GetAllTodo(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	id := c.Query("activity_group_id")
-	var todos []models.Todo
+	todos := []models.Todo{}
 
 	if id == "" {
 		if err := db.Raw("select * from todos").Scan(&todos).Error; err != nil {
@@ -35,12 +35,12 @@ func GetTodoByID(c *gin.Context) {
 	var todos models.Todo
 
 	if err := db.Raw("select * from todos where todo_id = ?", param).Scan(&todos).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "message": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 		return
 	}
 
 	if (todos == models.Todo{}) {
-		c.JSON(http.StatusOK, gin.H{"status": "Not Found", "message": "Todo with ID 8 Not Found"})
+		c.JSON(http.StatusNotFound, gin.H{"status": "Not Found", "message": fmt.Sprintf("Todo with ID %s Not Found", param)})
 		return
 	}
 
@@ -58,28 +58,35 @@ func PostTodo(c *gin.Context) {
 	}
 
 	if err := db.Raw("insert into todos(title, activity_group_id, is_active, priority) values(?,?,?,?)", B.Title, B.Activity_Group_Id, B.Is_Active, B.Priority).Scan(&todos).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": err.Error()})
 		return
 	}
 
 	db.Last(&todos)
 
-	c.JSON(http.StatusOK, gin.H{"status": "Success", "message": "Success", "data": todos})
+	c.JSON(http.StatusCreated, gin.H{"status": "Success", "message": "Success", "data": todos})
 }
 
 func UpdateTodoByID(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	id := c.Param("id")
 	var todo models.Todo
-	var B models.PostTodo_Req
+	var B models.UpdateTodo_Req
 
 	if err := c.ShouldBindJSON(&B); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "Bad Request", "message": "title cannot be null"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "Bad Request", "message": "title cannot be null", "err": err.Error()})
 		return
 	}
 
-	if err := db.Exec("update todos set title = ?, activity_group_id = ?, priority = ?, is_active = ? where todo_id = ?", B.Title, B.Activity_Group_Id, B.Is_Active, id).Error; err != nil {
+	result := db.Exec("update todos set title = ?, priority = ?, is_active = ? where todo_id = ?", B.Title, B.Priority, B.Is_Active, id)
+
+	if err := result.Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "status": http.StatusInternalServerError})
+		return
+	}
+
+	if result.RowsAffected < 1 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "ID tidak ditemukan", "status": http.StatusNotFound})
 		return
 	}
 
@@ -90,14 +97,14 @@ func UpdateTodoByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "Success", "message": "Success", "data": todo})
+	c.JSON(http.StatusOK, gin.H{"status": "Success", "message": "Success", "data": todo})
 }
 
 func DeleteTodoByID(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	id := c.Param("id")
 
-	result := db.Exec("delete from todo where todo_id = ?", id)
+	result := db.Exec("delete from todos where todo_id = ?", id)
 	if err := result.Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "status": http.StatusInternalServerError})
 		return

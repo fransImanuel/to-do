@@ -6,5 +6,5 @@ import (
 
 func Init(mysql *db.MysqlConn) {
 	r := NewRouter(mysql)
-	r.Run(":8090")
+	r.Run(":3030")
 }
